@@ -284,7 +284,8 @@ async function showVSCodePicker(): Promise<void> {
   picker.onDidAccept(() => {
     const selection = picker.activeItems[0];
     if (selection && selection instanceof EntryItem) {
-      insertCitation(`@${selection.result.citekey}`);
+      // Insert citation in markdown format with brackets
+      insertCitation(`[@${selection.result.citekey}]`);
     }
     picker.hide();
   });
@@ -309,7 +310,11 @@ async function showZoteroPicker(): Promise<void> {
   try {
     const result: string = await requestPromise(String(config.port));
     if (result) {
-      await insertCitation(result);
+      // Wrap citation in brackets if not already wrapped
+      // Handle cases: @key -> [@key], [@key] -> [@key] (no double-wrapping)
+      const trimmed = result.trim();
+      const wrappedCitation = trimmed.startsWith('[') ? trimmed : `[${trimmed}]`;
+      await insertCitation(wrappedCitation);
     }
   } catch (err: any) {
     console.log('Failed to fetch citation: %j', err.message);

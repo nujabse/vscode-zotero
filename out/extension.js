@@ -267,7 +267,8 @@ async function showVSCodePicker() {
     picker.onDidAccept(() => {
         const selection = picker.activeItems[0];
         if (selection && selection instanceof EntryItem) {
-            insertCitation(`@${selection.result.citekey}`);
+            // Insert citation in markdown format with brackets
+            insertCitation(`[@${selection.result.citekey}]`);
         }
         picker.hide();
     });
@@ -287,7 +288,11 @@ async function showZoteroPicker() {
     try {
         const result = await (0, request_promise_1.default)(String(config.port));
         if (result) {
-            await insertCitation(result);
+            // Wrap citation in brackets if not already wrapped
+            // Handle cases: @key -> [@key], [@key] -> [@key] (no double-wrapping)
+            const trimmed = result.trim();
+            const wrappedCitation = trimmed.startsWith('[') ? trimmed : `[${trimmed}]`;
+            await insertCitation(wrappedCitation);
         }
     }
     catch (err) {
