@@ -312,7 +312,8 @@ async function showZoteroPicker(): Promise<void> {
     if (result) {
       // Wrap citation in brackets if not already wrapped
       // Handle cases: @key -> [@key], [@key] -> [@key] (no double-wrapping)
-      const wrappedCitation = result.trim().startsWith('[') ? result : `[${result}]`;
+      const trimmed = result.trim();
+      const wrappedCitation = trimmed.startsWith('[') ? trimmed : `[${trimmed}]`;
       await insertCitation(wrappedCitation);
     }
   } catch (err: any) {
